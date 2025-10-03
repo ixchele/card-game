@@ -40,6 +40,16 @@ def addstr_multiligne(win, y, x, texte):
     for i, ligne in enumerate(texte.split("\n")):
         win.addstr(y + i, x, ligne)
 
+
+def center_text(win, texte):
+    height, width = win.getmaxyx()
+    lignes = texte.split("\n")
+    start_y = (height - len(lignes)) // 2
+    for i, ligne in enumerate(lignes):
+        x = (width - len(ligne)) // 2
+        win.addstr(start_y + i, x, ligne)
+        # addstr_multiligne(win, start_y, x, texte)
+
 def print_header(stdscr):
     header = ""
     header += " /$$$$$$$  /$$        /$$$$$$   /$$$$$$  /$$   /$$          /$$$$$  /$$$$$$   /$$$$$$  /$$   /$$\n"
@@ -51,25 +61,41 @@ def print_header(stdscr):
     header += "| $$$$$$$/| $$$$$$$$| $$  | $$|  $$$$$$/| $$ \\  $$      |  $$$$$$/| $$  | $$|  $$$$$$/| $$ \\  $$\n"
     header += "|_______/ |________/|__/  |__/ \\______/ |__/  \\__/       \\______/ |__/  |__/ \\______/ |__/  \\__/\n"
     title = ""
-    title += "\t\t┳┓┓ ┏┓┏┓┓┏┓  ┏┳┏┓┏┓┓┏┓\n"
-    title += "\t\t┣┫┃ ┣┫┃ ┃┫    ┃┣┫┃ ┃┫ \n"
-    title += "\t\t┻┛┗┛┛┗┗┛┛┗┛  ┗┛┛┗┗┛┛┗┛\n"
-    addstr_multiligne(stdscr, 0, 0, title)
+    title += "┳┓┓ ┏┓┏┓┓┏┓  ┏┳┏┓┏┓┓┏┓\n"
+    title += "┣┫┃ ┣┫┃ ┃┫    ┃┣┫┃ ┃┫ \n"
+    title += "┻┛┗┛┛┗┗┛┛┗┛  ┗┛┛┗┗┛┛┗┛\n"
+    # addstr_multiligne(stdscr, 0, 0, title)
+    center_text(stdscr, header)
+
 
 def main(stdscr):
     deck = generate_deck()
-    shuffle_deck(deck)
+    # shuffle_deck(deck)
     curses.curs_set(0)
-    while len(deck) != 0:
-        print_header(stdscr)
+
+    while True:
+        stdscr.border()
+        print_header(stdscr)  # toujours redessiner le header
+        stdscr.refresh()
+
         key = stdscr.getch()
         stdscr.clear()
-        if key == ord('d'):
-            addstr_multiligne(stdscr, 10, 0, draw_card(deck))
-            addstr_multiligne(stdscr, 10, 7, draw_card(deck))
-            stdscr.refresh()
+
         if key == ord('q'):
             break
+        elif key == ord('d'):
+            if len(deck) >= 2:  # pour éviter erreur si deck < 2
+                addstr_multiligne(stdscr, 10, 1, draw_card(deck))
+                # addstr_multiligne(stdscr, 10, 8, draw_card(deck))
+                stdscr.refresh()
+            elif len(deck) == 1:
+                addstr_multiligne(stdscr, 10, 1, draw_card(deck))
+            stdscr.refresh()
+        if key == curses.KEY_RESIZE:
+            stdscr.refresh()
+            # juste continuer la boucle → redraw automatique
+            continue
+
 
 curses.wrapper(main)
 
