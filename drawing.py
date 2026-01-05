@@ -39,6 +39,8 @@ def print_header(stdscr):
 
 def main(stdscr):
     curses.curs_set(0)
+    deck: Deck = Deck()
+    deck.shuffle()
 
     while True:
         stdscr.border()
@@ -51,12 +53,12 @@ def main(stdscr):
         if key == ord('q'):
             break
         elif key == ord('d'):
-            if len(deck) >= 2:  # pour éviter erreur si deck < 2
-                addstr_multiligne(stdscr, 10, 1, draw_card(deck))
-                addstr_multiligne(stdscr, 10, 8, draw_card(deck))
+            if len(deck.cards) >= 2:
+                addstr_multiligne(stdscr, 10, 1, deck.draw().card)
+                addstr_multiligne(stdscr, 10, 8, deck.draw().card)
                 stdscr.refresh()
-            elif len(deck) == 1:
-                addstr_multiligne(stdscr, 10, 1, draw_card(deck))
+            elif len(deck.cards) == 1:
+                addstr_multiligne(stdscr, 10, 1, deck.draw())
             stdscr.refresh()
         if key == curses.KEY_RESIZE:
             stdscr.refresh()

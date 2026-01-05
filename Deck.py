@@ -40,7 +40,7 @@ class Deck:
                 deck.append(self.Card(rank, suit))
         return deck
 
-    def _shuffle(self) -> None:
+    def shuffle(self) -> None:
         random.shuffle(self.cards)
 
     def draw(self) -> "Deck.Card":
